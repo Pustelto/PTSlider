@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Slider test page</title>
+    <style>
+        body {
+            width: 800px;
+            margin: 0 auto;
+        }
+
+        .slider {
+            height: 250px;
+            width: 600px;
+            margin: 100px auto 0;
+            overflow: hidden;
+        }
+
+        .slider__item {
+            background-color: #E2E2E2;
+        }
+        span {
+            display: inline-block;
+            width: 100%;
+            line-height: 250px;
+            text-align: center;
+            font-size: 3em;
+        }
+    </style>
+    <script src="slider.js"></script>
+</head>
+<body>
+    <div class="slider">
+        <div class="slider__item"><span>item 1</span></div>
+        <div class="slider__item"><span>item 2</span></div>
+        <div class="slider__item"><span>item 3</span></div>
+    </div>
+</body>
+</html>
