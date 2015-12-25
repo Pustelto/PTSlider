@@ -1,8 +1,13 @@
 ._pt_slider {
+  position: relative;
   overflow: hidden;
+}
+
+._pt_slider__container {
 }
 
 ._pt_slider__item {
   display: block;
-  float: left;
+  position: absolute;
+  top: 0;
 }

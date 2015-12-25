@@ -1,5 +1,6 @@
 /**
  * Vanilla JS slider plugin
+ * Browser support IE9+
  * závislosti:
  *      classList
  *      querySelector
@@ -12,6 +13,11 @@
     function _PT_Slider( elem, opt) {
         var _ = this;
 
+        // Slider properties
+        _.container = document.querySelector( elem );
+        _.items = [];
+        _.settings = {};
+
         // Options
         _.defaults = {
             randomFirstItem: true,
@@ -19,16 +25,10 @@
             itemMinWidth: 0
         };
 
-        // TO-DO extend defaults and opt
-        _.settings = {
-            randomFirstItem: true,
-            numberOfItems: 1,
-            itemMinWidth: 0
-        };
-
-        // Slider properties
-        _.container = document.querySelector( elem );
-        _.items = [];
+        // Extends _.defaults and user options in order to create _.settings
+        if ( opt && typeof opt === "object" ) {
+            extendObj( _.settings, _.defaults, opt );
+        }
 
         // Initialization of plugin
         _.init();
@@ -40,10 +40,9 @@
         // add CSS class for slider container
         _.container.classList.add( '_pt_slider' );
 
-        // add CSS class for items
+        // prepare slider items
         _.initItems();
 
-        // setup number of slides per view
         // add buttons
         // add bullets
         // position slides correctly
@@ -58,19 +57,41 @@
         // Convert NodeList to Array and assign each item CSS class
         $itemsArray = Array.prototype.slice.call( $itemsNodeList );
         _.items = $itemsArray.map(function( item ){
-            return item.classList.add( '_pt_slider__item' );
+            item.classList.add( '_pt_slider__item' );
+            return item;
         });
 
-        console.log( _.items );
-        _.items.forEach( function( item ) {
-            console.log( item );
-            item.style.width = ( 100 / _.settings.numberOfItems ) + '%';
+        // Setup width and position of elements
+        _.items.forEach( function( item, index ) {
+            var interval = ( 100 / _.settings.numberOfItems );
+            item.style.width = interval + '%';
+            item.style.left = ( index * interval ) + '%'
         });
+
+
+
+
     };
 
     // Private methods
+    var extendObj = function ( result ) {
+        result = result || {};
+
+        for ( var i = 1; i < arguments.length; i++ ) {
+            if ( !arguments[i] ) {
+                continue;
+            }
+
+            for ( var property in arguments[i] ) {
+                if ( arguments[i].hasOwnProperty( property ) ) {
+                    result[ property ] = arguments[i][ property ];
+                }
+            }
+        }
+        return result;
+    };
 
     // FIXME
     // Calling instance of slider
-    var slider = new _PT_Slider( '.slider' );
+    var slider = new _PT_Slider( '.slider', { numberOfItems: 2 } );
 })();
