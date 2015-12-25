@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Slider test page</title>
+    <link rel="stylesheet" type="text/css" href="_pt_slider.css">
     <style>
         body {
             width: 800px;
@@ -10,10 +11,10 @@
         }
 
         .slider {
-            height: 250px;
+            height: auto;
+            min-height: 250px;
             width: 600px;
             margin: 100px auto 0;
-            overflow: hidden;
         }
 
         .slider__item {
@@ -27,7 +28,6 @@
             font-size: 3em;
         }
     </style>
-    <script src="slider.js"></script>
 </head>
 <body>
     <div class="slider">
@@ -35,5 +35,6 @@
         <div class="slider__item"><span>item 2</span></div>
         <div class="slider__item"><span>item 3</span></div>
     </div>
+    <script src="slider.js"></script>
 </body>
 </html>
