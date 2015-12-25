@@ -1,0 +1,8 @@
+._pt_slider {
+  overflow: hidden;
+}
+
+._pt_slider__item {
+  display: block;
+  float: left;
+}
