@@ -45,6 +45,8 @@
 
         // add buttons
         // add bullets
+        _.createControls();
+
         // position slides correctly
         // bind events
     };
@@ -52,7 +54,8 @@
     _PT_Slider.prototype.initItems = function() {
         var _ = this,
             $itemsNodeList = _.settings.itemSelector ? document.querySelectorAll( _.settings.itemSelector ) : _.container.children,
-            $itemsArray;
+            $itemsArray,
+            startIndex = 0;
 
         // Convert NodeList to Array and assign each item CSS class
         $itemsArray = Array.prototype.slice.call( $itemsNodeList );
@@ -61,16 +64,24 @@
             return item;
         });
 
+        // generate StartIndex for randomFirstItem === true
+        if ( _.settings.randomFirstItem ) {
+            startIndex = Math.floor( Math.random() * _.items.length );
+        }
+
         // Setup width and position of elements
         _.items.forEach( function( item, index ) {
             var interval = ( 100 / _.settings.numberOfItems );
+
             item.style.width = interval + '%';
-            item.style.left = ( index * interval ) + '%'
+            item.style.left = ( ( index - startIndex ) * interval ) + '%';
         });
+    };
 
+    _PT_Slider.prototype.createControls = function() {
+        var _ = this;
 
-
-
+        console.log( 'controls added' );
     };
 
     // Private methods
@@ -91,7 +102,5 @@
         return result;
     };
 
-    // FIXME
-    // Calling instance of slider
     var slider = new _PT_Slider( '.slider', { numberOfItems: 2 } );
 })();
