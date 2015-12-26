@@ -1,13 +1,20 @@
 /**
  * Vanilla JS slider plugin
- * Browser support IE9+
+ * Browser support IE10+
  * závislosti:
  *      classList
  *      querySelector
  *      Array.map
  */
-
-(function() {
+(function (root, _pt_slider) {
+    if ( typeof define === 'function' && define.amd ) {
+        define(_pt_slider);
+    } else if ( typeof exports === 'object' ) {
+        module.exports = _pt_slider();
+    } else {
+        root._PT_Slider = _pt_slider();
+    }
+})(typeof global !== "undefined" ? global : this.window || this.global, function () {
     'use strict';
 
     function _PT_Slider( elem, opt) {
@@ -20,7 +27,7 @@
 
         // Options
         _.defaults = {
-            randomFirstItem: true,
+            randomFirstItem: false,
             numberOfItems: 1,
             itemMinWidth: 0
         };
@@ -30,7 +37,6 @@
             extendObj( _.settings, _.defaults, opt );
         }
 
-        // Initialization of plugin
         _.init();
     }
 
@@ -102,5 +108,5 @@
         return result;
     };
 
-    var slider = new _PT_Slider( '.slider', { numberOfItems: 2 } );
-})();
+    return _PT_Slider;
+});
