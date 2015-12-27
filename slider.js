@@ -21,7 +21,8 @@
         var _ = this;
 
         // Slider properties
-        _.container = document.querySelector( elem );
+        _.slider = document.querySelector( elem );
+        _.container = null;
         _.items = [];
         _.settings = {};
 
@@ -29,7 +30,12 @@
         _.defaults = {
             randomFirstItem: false,
             numberOfItems: 1,
-            itemMinWidth: 0
+            itemMinWidth: 0,
+            controls: true,
+            bullets: false,
+            bulletsEl: 'ul',
+            prevText: 'Previous',
+            nextText: 'Next'
         };
 
         // Extends _.defaults and user options in order to create _.settings
@@ -41,16 +47,23 @@
     }
 
     _PT_Slider.prototype.init = function(){
-        var _ = this;
+        var _ = this,
+            $sliderParent;
+
+        // create slider container
+        _.container = document.createElement('div');
+        _.container.classList.add('_pt_slider__container');
+        $sliderParent = _.slider.parentElement;
+        $sliderParent.insertBefore( _.container, _.slider );
+        _.container.appendChild( _.slider );
 
         // add CSS class for slider container
-        _.container.classList.add( '_pt_slider' );
+        _.slider.classList.add( '_pt_slider' );
 
         // prepare slider items
         _.initItems();
 
-        // add buttons
-        // add bullets
+        // add buttons and bullets
         _.createControls();
 
         // position slides correctly
@@ -59,7 +72,7 @@
 
     _PT_Slider.prototype.initItems = function() {
         var _ = this,
-            $itemsNodeList = _.settings.itemSelector ? document.querySelectorAll( _.settings.itemSelector ) : _.container.children,
+            $itemsNodeList = _.settings.itemSelector ? document.querySelectorAll( _.settings.itemSelector ) : _.slider.children,
             $itemsArray,
             startIndex = 0;
 
@@ -87,7 +100,15 @@
     _PT_Slider.prototype.createControls = function() {
         var _ = this;
 
-        console.log( 'controls added' );
+        // FIXME - call as a proxy to pass 'this'
+        if ( _.settings.controls ) {
+            makeButton.call( _, 'prev' );
+            makeButton.call( _, 'next' );
+        }
+
+        if ( _.settings.bullets ) {
+            makeBullets.call( _ );
+        }
     };
 
     // Private methods
@@ -106,6 +127,43 @@
             }
         }
         return result;
+    };
+
+    /*
+     * @param direction - String
+     */
+    var makeButton = function( direction ) {
+        var _ = this,
+            $btn,
+            $text = direction === 'prev' ? _.settings.prevText : _.settings.nextText;
+
+        $btn = document.createElement( 'button' );
+        $btn.classList.add( '_pt_slider__control' );
+        $btn.classList.add( '_pt_slider__' + direction );
+        $btn.setAttribute( 'data-pt-slider-direction', direction );
+        $btn.innerHTML = $text;
+
+        _.container.appendChild( $btn );
+    };
+
+    var makeBullets = function() {
+        var _ = this,
+            $label,
+            $bullets,
+            $bullet;
+
+        $bullets = document.createElement( _.settings.bulletsEl );
+        $bullets.classList.add( '_pt_slider__bullets' );
+
+        for ( var i = 0; i < _.items.length; i++ ) {
+            $bullet = document.createElement('li');
+            // Add label to the list - check for custom label in data atribute or use number of item
+            $label = document.createTextNode( _.items[i].getAttribute( 'data-pt-slider-label' ) || i + 1 );
+            $bullet.appendChild( $label );
+            $bullets.appendChild( $bullet );
+        }
+
+        _.container.appendChild( $bullets );
     };
 
     return _PT_Slider;

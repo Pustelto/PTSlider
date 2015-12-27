@@ -31,16 +31,16 @@
 </head>
 <body>
     <div class="slider">
-        <div class="slider__item"><span>item 1</span></div>
+        <div class="slider__item" data-pt-slider-label="První item"><span>item 1</span></div>
         <div class="slider__item"><span>item 2</span></div>
-        <div class="slider__item"><span>item 3</span></div>
+        <div class="slider__item" data-pt-slider-label="Třetí prvek"><span>item 3</span></div>
         <div class="slider__item"><span>item 4</span></div>
         <div class="slider__item"><span>item 5</span></div>
         <div class="slider__item"><span>item 6</span></div>
     </div>
     <script src="slider.js"></script>
     <script>
-        var slider = new _PT_Slider( '.slider', { numberOfItems: 2 } );
+        var slider = new _PT_Slider( '.slider', { bullets: true, numberOfItems: 2 } );
     </script>
 </body>
 </html>
