@@ -6,7 +6,8 @@
     <link rel="stylesheet" type="text/css" href="_pt_slider.css">
     <style>
         body {
-            width: 1000px;
+            padding: 0 20px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
@@ -40,7 +41,13 @@
     </div>
     <script src="slider.js"></script>
     <script>
-        var slider = new _PT_Slider( '.slider', { bullets: true, numberOfItems: 2 } );
+        var opt = {
+            autoSlide: false,
+            slideInterval: 2000,
+            bullets: true,
+            itemsPerView: 2
+        };
+        var slider = new _PT_Slider( '.slider', opt );
     </script>
 </body>
 </html>

@@ -25,17 +25,20 @@
         _.container = null;
         _.items = [];
         _.settings = {};
+        _.slideTimer = null;
 
         // Options
         _.defaults = {
-            randomFirstItem: false,
-            numberOfItems: 1,
-            itemMinWidth: 0,
-            controls: true,
-            bullets: false,
-            bulletsEl: 'ul',
-            prevText: 'Previous',
-            nextText: 'Next'
+            randomFirstItem: false, // Start slider from 1st item or at random item
+            itemsPerView: 1,        // Number of slider items per view
+            //itemMinWidth: 0,        // Minimal width of item for responsive support
+            controls: true,         // Display slider controls
+            bullets: false,         // Display bullet list to switch specific slider item
+            bulletsEl: 'ul',        // Type of element for bullet list - 'ul' | 'ol'
+            prevText: 'Previous',   // String - text of prev button
+            nextText: 'Next',        // String - text of next button
+            autoSlide: false,       // Bool - slide automaticaly in given time interval
+            slideInterval: 2500    // Integer - time interval for autoSlide in ms
         };
 
         // Extends _.defaults and user options in order to create _.settings
@@ -46,6 +49,7 @@
         _.init();
     }
 
+    // PUBLIC METHODS
     _PT_Slider.prototype.init = function(){
         var _ = this,
             $sliderParent;
@@ -57,7 +61,7 @@
         $sliderParent.insertBefore( _.container, _.slider );
         _.container.appendChild( _.slider );
 
-        // add CSS class for slider container
+        // add CSS class for slider
         _.slider.classList.add( '_pt_slider' );
 
         // prepare slider items
@@ -66,8 +70,15 @@
         // add buttons and bullets
         _.createControls();
 
-        // position slides correctly
         // bind events
+        _.bindEvents();
+
+        // Automatic sliding
+        if ( _.settings.autoSlide ) {
+            _.slideTimer = window.setInterval( function() {
+                console.log('slide after interval');
+            }, _.settings.slideInterval );
+        }
     };
 
     _PT_Slider.prototype.initItems = function() {
@@ -90,7 +101,7 @@
 
         // Setup width and position of elements
         _.items.forEach( function( item, index ) {
-            var interval = ( 100 / _.settings.numberOfItems );
+            var interval = ( 100 / _.settings.itemsPerView );
 
             item.style.width = interval + '%';
             item.style.left = ( ( index - startIndex ) * interval ) + '%';
@@ -100,7 +111,6 @@
     _PT_Slider.prototype.createControls = function() {
         var _ = this;
 
-        // FIXME - call as a proxy to pass 'this'
         if ( _.settings.controls ) {
             makeButton.call( _, 'prev' );
             makeButton.call( _, 'next' );
@@ -111,7 +121,21 @@
         }
     };
 
-    // Private methods
+    _PT_Slider.prototype.bindEvents = function() {
+        var _ = this;
+
+        console.log( 'binding events' );
+    };
+
+    _PT_Slider.prototype.slideIt = function() {
+        var _ = this;
+    };
+
+    // PRIVATE METHODS
+    /*
+     * Equivalent of JQuery $.extend function to merge two objects
+     * @private
+     */
     var extendObj = function ( result ) {
         result = result || {};
 
@@ -130,6 +154,8 @@
     };
 
     /*
+     * Function to create controls for slider
+     * @private
      * @param direction - String
      */
     var makeButton = function( direction ) {
@@ -146,6 +172,10 @@
         _.container.appendChild( $btn );
     };
 
+    /*
+     * Function to create bullet list for slider
+     * @private
+     */
     var makeBullets = function() {
         var _ = this,
             $label,
