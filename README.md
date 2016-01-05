@@ -1,8 +1,8 @@
-# JS Slider Plugin
+# JS Slider Plugin (WIP)
 
 __current version: 0.1.0__
 
-This is my own custom JS slider plugin - it's base on slider plugin I wrote for my web for scout course [Ficak](http://www.ficak.skauting.cz). But that version is a bit crude and I got much better understanding of JS since that time. So I've desided do rewrite that plugin and to make it a standalone JS plugin in order to polish my JS skills and lear a new things in process.
+This is my own custom JS slider plugin - it's base on slider plugin I wrote for my web for scout course [Ficak](http://www.ficak.skauting.cz). But that version is a bit crude and I got much better understanding of JS since that time. So I've desided do rewrite that plugin and to make it a standalone JS plugin in order to polish my JS skills and learn a new things in process.
 
 Feel free to use it in your projects if you wish (and when it's done :-))
 
@@ -14,7 +14,7 @@ FIXME - example of markup
 - Responsive
 - User can setup number of slides per view
 - Infinite scrolling
-- Minimal styles - uset either basic template (ADD NAME OF FILE) or only styles necessary for proper working of plugin (without any vizual styling)
+- Minimal styles - uset either basic template (ADD NAME OF FILE) or only styles necessary for proper working of plugin (without any visual styling)
 - Easy configuration
 
 ## How to use it
