@@ -29,6 +29,7 @@
 
         // Options
         _.defaults = {
+            //itemSelector: null,     // Custom selector for slider items
             randomFirstItem: false, // Start slider from 1st item or at random item
             itemsPerView: 1,        // Number of slider items per view
             //itemMinWidth: 0,        // Minimal width of item for responsive support
@@ -75,20 +76,17 @@
 
         // Automatic sliding
         if ( _.settings.autoSlide ) {
-            _.slideTimer = window.setInterval( function() {
-                console.log('slide after interval');
-            }, _.settings.slideInterval );
+            _.slideTimer = window.setInterval( _.slideIt, _.settings.slideInterval );
         }
     };
 
     _PT_Slider.prototype.initItems = function() {
         var _ = this,
             $itemsNodeList = _.settings.itemSelector ? document.querySelectorAll( _.settings.itemSelector ) : _.slider.children,
-            $itemsArray,
+            $itemsArray = Array.prototype.slice.call( $itemsNodeList ),
             startIndex = 0;
 
-        // Convert NodeList to Array and assign each item CSS class
-        $itemsArray = Array.prototype.slice.call( $itemsNodeList );
+        // Assign each item CSS class
         _.items = $itemsArray.map(function( item ){
             item.classList.add( '_pt_slider__item' );
             return item;
@@ -129,6 +127,8 @@
 
     _PT_Slider.prototype.slideIt = function() {
         var _ = this;
+
+        console.log( 'item slided' );
     };
 
     // PRIVATE METHODS
