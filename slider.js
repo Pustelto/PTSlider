@@ -70,11 +70,14 @@
         // Create slider container
         _.createSliderContainer();
 
-        // Prepare slider items
-        _.initItems();
+        // Create slider items
+        _.createItems();
 
         // Add buttons and bullets
         _.createControls();
+
+        // Initial setup
+        _.setupSlider();
 
         // Bind events
         _.bindEvents();
@@ -104,32 +107,15 @@
         _.container.appendChild( _.slider );
     };
 
-    _PT_Slider.prototype.initItems = function() {
+    _PT_Slider.prototype.createItems = function() {
         var _ = this,
             $itemsNodeList = _.settings.itemSelector ? document.querySelectorAll( _.settings.itemSelector ) : _.slider.children,
-            $itemsArray = listToArray( $itemsNodeList ),
-            startIndex = 0;
+            $itemsArray = listToArray( $itemsNodeList );
 
         // Assign each item CSS class
         _.items = $itemsArray.map( function( item ) {
             item.classList.add( '_pt_slider__item' );
             return item;
-        });
-
-        // generate StartIndex for randomFirstItem === true
-        if ( _.settings.randomFirstItem ) {
-            startIndex = Math.floor( Math.random() * _.items.length );
-        }
-
-        // @FIXME
-        //this must be change based on used technology transform, left etc. Maybe separate function? Will be transition, fallback with abs pos
-
-        // Setup width and position of elements
-        _.items.forEach( function( item, index ) {
-            var interval = ( 100 / _.settings.itemsPerView );
-
-            item.style.width = interval + '%';
-            item.style.left = ( ( index - startIndex ) * interval ) + '%';
         });
     };
 
@@ -146,34 +132,64 @@
         }
     };
 
+    _PT_Slider.prototype.setupSlider = function() {
+        var _ = this,
+            $bullets = document.querySelectorAll('._pt_slider__bullet'),
+            startIndex = 0;
+
+
+        // generate StartIndex for randomFirstItem === true
+        if ( _.settings.randomFirstItem ) {
+            startIndex = Math.floor( Math.random() * _.items.length );
+        }
+
+        // @FIXME
+        //this must be change based on used technology transform, left etc. Maybe separate function? Will be transition, fallback with abs pos
+        // @TODO - assign state classes, clone items
+        // Setup width and position of elements
+        _.items.forEach( function( item, index ) {
+            var interval = ( 100 / _.settings.itemsPerView );
+
+            item.style.width = interval + '%';
+            item.style.left = ( ( index - startIndex ) * interval ) + '%';
+        });
+
+        // @FIXME - odvodit jako itesm / offset
+        $bullets[startIndex].classList.add('_pt_slider--active');
+    };
+
     _PT_Slider.prototype.bindEvents = function() {
         var _ = this,
-            el = listToArray( document.querySelectorAll( '._pt_slider__control' ) );
+            controls = listToArray( document.querySelectorAll( '._pt_slider__control' ) ),
+            bullets = listToArray( document.querySelectorAll( '._pt_slider__bullet' ) );
 
-            // @FIXME
-            // eventlistener on nodelist or array
         if ( _.settings.controls ) {
-            el.forEach( function( item ) {
+            controls.forEach( function( item ) {
                 item.addEventListener( 'click', function( e ) {
                     _.slideIt.call(_, e );
                 });
             });
         }
-/*
 
         if ( _.settings.bullets ) {
-            el.querySelectorAll( '._pt_slider__bullets' ).addEventListener( 'click', function(){
-                console.log( 'binding events for bullets' );
+            bullets.forEach( function( item ) {
+                item.addEventListener( 'click', function( e ) {
+                    _.slideIt.call(_, e );
+                });
             });
         }
-        */
     };
 
-    // @FIXME
-    // dont have access to slider obj
+    /**
+     * Function prepare data before sliding and call a sliding function
+     */
     _PT_Slider.prototype.slideIt = function( e ) {
         var _ = this,
             direction = e.target.getAttribute( 'data-pt-slider-direction');
+
+        if( !direction ) {
+            direction = e.target.getAttribute( 'data-pt-slider-item' ) - _.container.querySelector( '._pt_slider__bullet._pt_slider--active' ).getAttribute ('data-pt-slider-item' );
+        }
 
         moveItems( direction, _.settings.itemsToSlide );
     };
@@ -238,21 +254,30 @@
      * Function to create bullet list for slider
      * @private
      */
+     // @TODO - počet odrážek odvodit od items / offset
     var makeBullets = function() {
         var _ = this,
             $label,
             $bullets,
+            $li,
             $bullet;
 
         $bullets = document.createElement( _.settings.bulletsEl );
         $bullets.classList.add( '_pt_slider__bullets' );
 
         for ( var i = 0; i < _.items.length; i++ ) {
-            $bullet = document.createElement('li');
+            $li = document.createElement( 'li' );
+            $bullet = document.createElement( 'button' );
+            $li.appendChild( $bullet );
+
+            $bullet.classList.add( '_pt_slider__bullet' );
+            $bullet.setAttribute( 'data-pt-slider-item', ( i + 1 ) );
+
             // Add label to the list - check for custom label in data atribute or use number of item
             $label = document.createTextNode( _.items[i].getAttribute( 'data-pt-slider-label' ) || i + 1 );
+
             $bullet.appendChild( $label );
-            $bullets.appendChild( $bullet );
+            $bullets.appendChild( $li );
         }
 
         _.container.appendChild( $bullets );
@@ -265,9 +290,8 @@
      * @param offset {Integer} - how many sliders should move
      */
     var moveItems = function( direction, offset ) {
-        var dir;
-
-        dir = convertDirToNumber( direction );
+        var dir = convertDirToNumber( direction ),
+            items = 0;
 
         console.log( 'item slided in direction ' + direction );
         console.log( 'offset ' + offset );
@@ -295,6 +319,6 @@
         return n;
     };
 
-    //return _PT_Slider;
+    // @FIXME - return _PT_Slider;
     return ms;
 });

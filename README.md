@@ -26,24 +26,27 @@ přepínání (slidování) itemů - univerzální fce pro slide i rychle přepn
 
 
 ## TO-DO
-- nevracet contructor, ale funkci, aby nemusel použít `new`
-- wrapper function - test feature compatibility (transition)
-    - classList...
-    - pokud neprojde feature testem - vypsat do console text s infem
 - sliding
     - via buttons
     - via bullets
     - automatic in specific interval
+- proper initialization - with init data attr, correct return function
+- proper init wrapper and funtion (test if fce can be safely run - on.DomContentLoaded, nastavit init data attr)
 - destroy function
+
+- nevracet contructor, ale funkci, aby nemusel použít `new`
+- wrapper function - test feature compatibility (transition)
+    - classList...
+    - pokud neprojde feature testem - vypsat do console text s infem
 - responsivity
 - maybe IE9 an IE8 support
-- proper init wrapper and funtion (test if fce can be safely run - on.DomContentLoaded, nastavit init data attr)
 - trigerrovat eventy
     - init
     - beforeSlide
     - afterSlide
     - ...
 
+- RENAME THE PLUGIN
 
 
 ## Issues:

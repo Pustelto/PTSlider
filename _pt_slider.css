@@ -12,3 +12,16 @@
   top: 0;
   will-chagne: transform;
 }
+
+._pt_slider__bullets {
+  margin: 0;
+  padding: 0;
+}
+
+._pt_slider__bullet {
+  display: inline-block;
+}
+
+._pt_slider--active {
+  border: 1px solid red;
+}
