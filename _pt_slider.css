@@ -10,4 +10,5 @@
   display: block;
   position: absolute;
   top: 0;
+  will-chagne: transform;
 }

@@ -10,6 +10,9 @@ My aim was to create lightweight vanilla JS plugin which can be used in most cas
 
 FIXME - example of markup
 
+přepínání (slidování) itemů - univerzální fce pro slide i rychle přepnutí - jak to bude probíhat
+
+
 ## Features
 - Responsive
 - User can setup number of slides per view
@@ -23,7 +26,10 @@ FIXME - example of markup
 
 
 ## TO-DO
+- nevracet contructor, ale funkci, aby nemusel použít `new`
 - wrapper function - test feature compatibility (transition)
+    - classList...
+    - pokud neprojde feature testem - vypsat do console text s infem
 - sliding
     - via buttons
     - via bullets
@@ -31,3 +37,14 @@ FIXME - example of markup
 - destroy function
 - responsivity
 - maybe IE9 an IE8 support
+- proper init wrapper and funtion (test if fce can be safely run - on.DomContentLoaded, nastavit init data attr)
+- trigerrovat eventy
+    - init
+    - beforeSlide
+    - afterSlide
+    - ...
+
+
+
+## Issues:
+- multiple objects on one page

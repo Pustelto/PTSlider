@@ -11,7 +11,8 @@
             margin: 0 auto;
         }
 
-        .slider {
+        .slider,
+        .slider-2 {
             height: auto;
             min-height: 250px;
             width: 100%;
@@ -39,6 +40,27 @@
         <div class="slider__item"><span>item 5</span></div>
         <div class="slider__item"><span>item 6</span></div>
     </div>
+
+<!--
+    <div class="slider">
+        <div class="slider__item" data-pt-slider-label="První item"><span>item 1</span></div>
+        <div class="slider__item"><span>item 2</span></div>
+        <div class="slider__item" data-pt-slider-label="Třetí prvek"><span>item 3</span></div>
+        <div class="slider__item"><span>item 4</span></div>
+        <div class="slider__item"><span>item 5</span></div>
+        <div class="slider__item"><span>item 6</span></div>
+    </div>
+-->
+
+    <div class="slider-2">
+        <div class="slider__item" data-pt-slider-label="První item"><span>item 1</span></div>
+        <div class="slider__item"><span>item 2</span></div>
+        <div class="slider__item" data-pt-slider-label="Třetí prvek"><span>item 3</span></div>
+        <div class="slider__item"><span>item 4</span></div>
+        <div class="slider__item"><span>item 5</span></div>
+        <div class="slider__item"><span>item 6</span></div>
+    </div>
+
     <script src="slider.js"></script>
     <script>
         var opt = {
@@ -47,7 +69,15 @@
             bullets: true,
             itemsPerView: 2
         };
-        var slider = new _PT_Slider( '.slider', opt );
+        _PT_Slider( '.slider', opt );
+
+        var opt2 = {
+            autoSlide: true,
+            slideInterval: 2000,
+            bullets: false,
+            itemsPerView: 1
+        };
+        //_PT_Slider( '.slider-2', opt2 );
     </script>
 </body>
 </html>
