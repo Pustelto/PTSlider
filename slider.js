@@ -1,3 +1,4 @@
+// @FIXME - proper description and browser support
 /**
  * Vanilla JS slider plugin
  * Browser support IE10+
@@ -34,25 +35,27 @@
 
         // Properties for sliding functionality
         _.isSliding = false;
+        _.currentIndex = 0;
 
         // Empty object for slider settings
         _.settings = {};
 
         // Default options
         _.defaults = {
-            //itemSelector: null,     // Custom selector for slider items
+            itemSelector: null,     // Custom selector for slider items
             randomFirstItem: false, // Start slider from 1st item or at random item
             itemsPerView: 1,        // Number of slider items per view
             itemsToSlide: 1,
             //itemMinWidth: 0,        // Minimal width of item for responsive support
             controls: true,         // Display slider controls
             bullets: false,         // Display bullet list to switch specific slider item
-            bulletsEl: 'ul',        // Type of element for bullet list - 'ul' | 'ol'
+            bulletsEl: 'ol',        // Type of element for bullet list - 'ul' | 'ol'
             prevText: 'Previous',   // String - text of prev button
             nextText: 'Next',        // String - text of next button
             autoSlide: false,       // Bool - slide automaticaly in given time interval
             slideInterval: 2500,    // Integer - time interval for autoSlide in ms
-            defaultDirection: 'left'    // String (left, right) - default direction of sliding for autoSlide @FIXME - value and type may change
+            //pauseOnHover: true,     //pause autosliding on mouse hover over slider
+            defaultDirection: 'next'    // String (prev, next) - default direction of sliding for autoSlide @FIXME - value and type may change
         };
 
         // Extends _.defaults and user options in order to create _.settings
@@ -71,7 +74,7 @@
         _.createSliderContainer();
 
         // Create slider items
-        _.createItems();
+        _.setupItems();
 
         // Add buttons and bullets
         _.createControls();
@@ -85,9 +88,11 @@
         // Automatic sliding
         if ( _.settings.autoSlide ) {
             _.slideTimer = window.setInterval( function() {
-                _.slideIt( _.settings.defaultDirection );
+                moveItems.call(_, _.settings.defaultDirection, _.settings.itemsToSlide, false );
             }, _.settings.slideInterval );
         }
+
+        _.slider.setAttribute( 'data-pt-slider-initialized', true);
     };
 
     _PT_Slider.prototype.createSliderContainer = function() {
@@ -107,7 +112,7 @@
         _.container.appendChild( _.slider );
     };
 
-    _PT_Slider.prototype.createItems = function() {
+    _PT_Slider.prototype.setupItems = function() {
         var _ = this,
             $itemsNodeList = _.settings.itemSelector ? document.querySelectorAll( _.settings.itemSelector ) : _.slider.children,
             $itemsArray = listToArray( $itemsNodeList );
@@ -134,13 +139,11 @@
 
     _PT_Slider.prototype.setupSlider = function() {
         var _ = this,
-            $bullets = document.querySelectorAll('._pt_slider__bullet'),
-            startIndex = 0;
+            $bullets = _.container.querySelectorAll('._pt_slider__bullet');
 
-
-        // generate StartIndex for randomFirstItem === true
+        // generate start index for randomFirstItem === true
         if ( _.settings.randomFirstItem ) {
-            startIndex = Math.floor( Math.random() * _.items.length );
+            _.currentIndex = Math.floor( Math.random() * _.items.length / _.settings.itemsToSlide ) * _.settings.itemsToSlide;
         }
 
         // @FIXME
@@ -151,17 +154,20 @@
             var interval = ( 100 / _.settings.itemsPerView );
 
             item.style.width = interval + '%';
-            item.style.left = ( ( index - startIndex ) * interval ) + '%';
+            item.style.left = ( index * interval ) + '%';
+            item.style.transform = ( 'translate3d( -' + _.currentIndex * 100 + '%, 0, 0 )' );
         });
 
         // @FIXME - odvodit jako itesm / offset
-        $bullets[startIndex].classList.add('_pt_slider--active');
+        if ( _.settings.bullets ) {
+            $bullets[ Math.ceil( _.currentIndex / _.settings.itemsToSlide) ].classList.add('_pt_slider--active');
+        }
     };
 
     _PT_Slider.prototype.bindEvents = function() {
         var _ = this,
-            controls = listToArray( document.querySelectorAll( '._pt_slider__control' ) ),
-            bullets = listToArray( document.querySelectorAll( '._pt_slider__bullet' ) );
+            controls = listToArray( _.container.querySelectorAll( '._pt_slider__control' ) ),
+            bullets = listToArray( _.container.querySelectorAll( '._pt_slider__bullet' ) );
 
         if ( _.settings.controls ) {
             controls.forEach( function( item ) {
@@ -185,13 +191,15 @@
      */
     _PT_Slider.prototype.slideIt = function( e ) {
         var _ = this,
-            direction = e.target.getAttribute( 'data-pt-slider-direction');
+            direction = e.target.getAttribute( 'data-pt-slider-direction'),
+            directMove = false;
 
         if( !direction ) {
-            direction = e.target.getAttribute( 'data-pt-slider-item' ) - _.container.querySelector( '._pt_slider__bullet._pt_slider--active' ).getAttribute ('data-pt-slider-item' );
+            direction = e.target.getAttribute( 'data-pt-slider-item' );
+            directMove = true;
         }
 
-        moveItems( direction, _.settings.itemsToSlide );
+        moveItems.call(_, direction, _.settings.itemsToSlide, directMove );
     };
 
     // @TODO
@@ -265,13 +273,13 @@
         $bullets = document.createElement( _.settings.bulletsEl );
         $bullets.classList.add( '_pt_slider__bullets' );
 
-        for ( var i = 0; i < _.items.length; i++ ) {
+        for ( var i = 0; i < ( Math.ceil( _.items.length / _.settings.itemsToSlide ) ); i++ ) {
             $li = document.createElement( 'li' );
             $bullet = document.createElement( 'button' );
             $li.appendChild( $bullet );
 
             $bullet.classList.add( '_pt_slider__bullet' );
-            $bullet.setAttribute( 'data-pt-slider-item', ( i + 1 ) );
+            $bullet.setAttribute( 'data-pt-slider-item', i );
 
             // Add label to the list - check for custom label in data atribute or use number of item
             $label = document.createTextNode( _.items[i].getAttribute( 'data-pt-slider-label' ) || i + 1 );
@@ -288,13 +296,34 @@
      * @private
      * @param direction {String} - direction in which items will move
      * @param offset {Integer} - how many sliders should move
+     * @param directMove {Boolean} - directs whether movement is only by one step or to specific slider item
      */
-    var moveItems = function( direction, offset ) {
-        var dir = convertDirToNumber( direction ),
-            items = 0;
+    var moveItems = function( direction, offset, directMove ) {
+        var _ = this,
+            dir = convertDirToNumber( direction ),
+            position;
 
-        console.log( 'item slided in direction ' + direction );
-        console.log( 'offset ' + offset );
+        _.isSliding = true;
+
+        if ( directMove ) {
+            position = dir * offset * -100;
+            _.currentIndex = dir;
+        } else {
+            position = ( _.currentIndex + dir ) * offset * -100;
+            _.currentIndex = _.currentIndex + dir;
+        }
+
+        _.items.forEach(function( item ){
+            item.style.transform = ( 'translate3d( ' + position + '%, 0, 0)' );
+        });
+
+        //swap active class on bullets
+        if ( _.settings.bullets ) {
+            _.container.querySelector( '._pt_slider--active' ).classList.remove( '_pt_slider--active' );
+            _.container.querySelectorAll( '._pt_slider__bullet' )[_.currentIndex].classList.add( '_pt_slider--active' );
+        }
+
+        _.isSliding = false;
     };
 
     /*
@@ -312,7 +341,7 @@
         if( direction === 'next' ) {
             n = 1;
         }
-        if( !!parseInt( direction, 10 ) ) {
+        if( !isNaN( parseInt( direction, 10 ) ) ) {
             n = parseInt( direction, 10 );
         }
 
