@@ -89,9 +89,7 @@
 
         // Automatic sliding
         if ( _.settings.autoSlide ) {
-            _.slideTimer = window.setInterval( function() {
-                moveItems.call(_, _.settings.defaultDirection, _.settings.itemsToSlide, false );
-            }, _.settings.slideInterval );
+            setAutoSliding.call(_);
         }
 
         _.slider.setAttribute( 'data-pt-slider-initialized', true);
@@ -306,18 +304,18 @@
     var moveItems = function( direction, offset, directMove ) {
         var _ = this,
             dir = convertDirToNumber( direction ),
-            ci,
-            bi,
+            workIndex,
+            bulletIndex,
             position;
 
         _.isSliding = true;
 
         if ( directMove ) {
-            ci = dir * offset;
-            _.currentIndex = setNewIndex.call( _, ci, dir );
+            workIndex = dir * offset;
+            _.currentIndex = setNewIndex.call( _, workIndex, dir );
         } else {
-            ci = _.currentIndex + ( dir * offset );
-            _.currentIndex = setNewIndex.call( _, ci, dir );
+            workIndex = _.currentIndex + ( dir * offset );
+            _.currentIndex = setNewIndex.call( _, workIndex, dir );
         }
 
         position = _.currentIndex * -100;
@@ -326,15 +324,19 @@
             item.style.transform = ( 'translate3d( ' + position + '%, 0, 0)' );
         });
 
-        // @FIXME - špatně se počítá index buttonu, dodělat až bude vyřešený kompletně pohyb
         //swap active class on bullets
-        /*
         if ( _.settings.bullets ) {
-            bi = _.currentIndex - ( _.currentIndex % _.settings.itemsToSlide );
+            if ( _.currentIndex + _.settings.itemsToSlide === _.items.length ) {
+                bulletIndex = Math.ceil( _.currentIndex / _.settings.itemsToSlide );
+            } else {
+                bulletIndex = Math.floor( _.currentIndex / _.settings.itemsToSlide );
+            }
             _.container.querySelector( '._pt_slider--active' ).classList.remove( '_pt_slider--active' );
-            _.container.querySelectorAll( '._pt_slider__bullet' )[ bi ].classList.add( '_pt_slider--active' );
+            _.container.querySelectorAll( '._pt_slider__bullet' )[ bulletIndex ].classList.add( '_pt_slider--active' );
         }
-        */
+
+        //reset auto slide timer
+        setAutoSliding.call(_);
 
         _.isSliding = false;
     };
@@ -368,26 +370,36 @@
      * @param ci {Integer} - new current index
      * @return Integer
      */
-    var setNewIndex = function( ci, dir ) {
+    var setNewIndex = function( workIndex, dir ) {
         var _ = this,
-            newIndex = ci;
+            newIndex = workIndex;
 
-        if ( ( ( ci + _.settings.itemsToSlide ) === 0 ) || ( ci === _.items.length ) ) {
+        if ( ( ( newIndex + _.settings.itemsToSlide ) === 0 ) || ( newIndex === _.items.length ) ) {
             if ( dir < 0 ) {
                 newIndex = _.items.length - _.settings.itemsToSlide;
             } else {
                 newIndex = 0;
             }
         } else {
-            if ( ( ci + _.settings.itemsToSlide ) > _.items.length ) {
+            if ( ( newIndex + _.settings.itemsToSlide ) > _.items.length ) {
                 newIndex = _.items.length - _.settings.itemsToSlide;
             }
-            if ( ci < 0 && ( (-1 * ci ) < _.settings.itemsToSlide ) ) {
+            if ( newIndex < 0 && ( (-1 * newIndex ) < _.settings.itemsToSlide ) ) {
                 newIndex = 0;
             }
         }
         return newIndex;
     };
+
+    var setAutoSliding = function() {
+        var _ = this;
+
+        clearInterval(_.slideTimer);
+
+        _.slideTimer = window.setInterval( function() {
+            moveItems.call(_, _.settings.defaultDirection, _.settings.itemsToSlide, false );
+        }, _.settings.slideInterval );
+    }
 
     // @FIXME - return _PT_Slider;
     return ms;
