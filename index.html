@@ -21,6 +21,7 @@
 
         .slider__item {
             background-color: #E2E2E2;
+            transition: transform 0.5s ease-in-out;
         }
         span {
             display: inline-block;
@@ -58,7 +59,6 @@
         <div class="slider__item" data-pt-slider-label="Třetí prvek"><span>item 3</span></div>
         <div class="slider__item"><span>item 4</span></div>
         <div class="slider__item"><span>item 5</span></div>
-        <div class="slider__item"><span>item 6</span></div>
     </div>
 
     <script src="slider.js"></script>
@@ -76,11 +76,11 @@
         var opt2 = {
             autoSlide: true,
             slideInterval: 2000,
-            bullets: false,
+            bullets: true,
             itemsPerView: 2,
             itemsToSlide: 2
         };
-        //_PT_Slider( '.slider-2', opt2 );
+        _PT_Slider( '.slider-2', opt2 );
     </script>
 </body>
 </html>

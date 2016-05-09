@@ -18,6 +18,7 @@
 })(typeof global !== "undefined" ? global : this.window || this.global, function () {
     'use strict';
 
+    //@FIXME - upravit funkci
     function ms( elem, opt) {
         return new _PT_Slider( elem, opt );
     }
@@ -36,6 +37,7 @@
         // Properties for sliding functionality
         _.isSliding = false;
         _.currentIndex = 0;
+        _.currentItemsPerView = 1;
 
         // Empty object for slider settings
         _.settings = {};
@@ -137,18 +139,21 @@
         }
     };
 
+    //@FIXME - rozkouskovat na menší funkce - aby se dali části použít i při reinitu v responsivu
     _PT_Slider.prototype.setupSlider = function() {
         var _ = this,
+            ci,
             $bullets = _.container.querySelectorAll('._pt_slider__bullet');
+
+        // current number of items per view - necessary for proper responsivnes
+        _.currentItemsPerView = _.settings.itemsPerView;
 
         // generate start index for randomFirstItem === true
         if ( _.settings.randomFirstItem ) {
-            _.currentIndex = Math.floor( Math.random() * _.items.length / _.settings.itemsToSlide ) * _.settings.itemsToSlide;
+            ci = Math.floor( Math.random() * _.items.length );
+            _.currentIndex = ci - (ci % _.settings.itemsToSlide );
         }
 
-        // @FIXME
-        //this must be change based on used technology transform, left etc. Maybe separate function? Will be transition, fallback with abs pos
-        // @TODO - assign state classes, clone items
         // Setup width and position of elements
         _.items.forEach( function( item, index ) {
             var interval = ( 100 / _.settings.itemsPerView );
@@ -301,27 +306,35 @@
     var moveItems = function( direction, offset, directMove ) {
         var _ = this,
             dir = convertDirToNumber( direction ),
+            ci,
+            bi,
             position;
 
         _.isSliding = true;
 
         if ( directMove ) {
-            position = dir * offset * -100;
-            _.currentIndex = dir;
+            ci = dir * offset;
+            _.currentIndex = setNewIndex.call( _, ci, dir );
         } else {
-            position = ( _.currentIndex + dir ) * offset * -100;
-            _.currentIndex = _.currentIndex + dir;
+            ci = _.currentIndex + ( dir * offset );
+            _.currentIndex = setNewIndex.call( _, ci, dir );
         }
 
-        _.items.forEach(function( item ){
+        position = _.currentIndex * -100;
+
+        _.items.forEach(function( item ) {
             item.style.transform = ( 'translate3d( ' + position + '%, 0, 0)' );
         });
 
+        // @FIXME - špatně se počítá index buttonu, dodělat až bude vyřešený kompletně pohyb
         //swap active class on bullets
+        /*
         if ( _.settings.bullets ) {
+            bi = _.currentIndex - ( _.currentIndex % _.settings.itemsToSlide );
             _.container.querySelector( '._pt_slider--active' ).classList.remove( '_pt_slider--active' );
-            _.container.querySelectorAll( '._pt_slider__bullet' )[_.currentIndex].classList.add( '_pt_slider--active' );
+            _.container.querySelectorAll( '._pt_slider__bullet' )[ bi ].classList.add( '_pt_slider--active' );
         }
+        */
 
         _.isSliding = false;
     };
@@ -346,6 +359,34 @@
         }
 
         return n;
+    };
+
+    /*
+     * Check if the slider items are off limit and slider should be returned to basic position
+     * @private
+     * @param that {JS obj}
+     * @param ci {Integer} - new current index
+     * @return Integer
+     */
+    var setNewIndex = function( ci, dir ) {
+        var _ = this,
+            newIndex = ci;
+
+        if ( ( ( ci + _.settings.itemsToSlide ) === 0 ) || ( ci === _.items.length ) ) {
+            if ( dir < 0 ) {
+                newIndex = _.items.length - _.settings.itemsToSlide;
+            } else {
+                newIndex = 0;
+            }
+        } else {
+            if ( ( ci + _.settings.itemsToSlide ) > _.items.length ) {
+                newIndex = _.items.length - _.settings.itemsToSlide;
+            }
+            if ( ci < 0 && ( (-1 * ci ) < _.settings.itemsToSlide ) ) {
+                newIndex = 0;
+            }
+        }
+        return newIndex;
     };
 
     // @FIXME - return _PT_Slider;
