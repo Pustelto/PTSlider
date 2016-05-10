@@ -89,7 +89,7 @@
 
         // Automatic sliding
         if ( _.settings.autoSlide ) {
-            setAutoSliding.call(_);
+            autoSliding.call(_);
         }
 
         _.slider.setAttribute( 'data-pt-slider-initialized', true);
@@ -336,7 +336,9 @@
         }
 
         //reset auto slide timer
-        setAutoSliding.call(_);
+        if ( _.settings.autoSlide ) {
+            autoSliding.call(_);
+        }
 
         _.isSliding = false;
     };
@@ -391,7 +393,7 @@
         return newIndex;
     };
 
-    var setAutoSliding = function() {
+    var autoSliding = function() {
         var _ = this;
 
         clearInterval(_.slideTimer);
