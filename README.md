@@ -49,5 +49,6 @@ FIXME - example of markup
 - infinit scrolling
 
 
-## Issues:
+## BUGS:
 - multiple objects on one page
+- při lichám počtu itemů a sudém offsetu se špatně zvýrazňují bullety

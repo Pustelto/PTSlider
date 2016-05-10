@@ -38,6 +38,7 @@
         _.isSliding = false;
         _.currentIndex = 0;
         _.currentItemsPerView = 1;
+        _.currentItemsToSlide = 1;
 
         // Empty object for slider settings
         _.settings = {};
@@ -56,7 +57,7 @@
             nextText: 'Next',        // String - text of next button
             autoSlide: false,       // Bool - slide automaticaly in given time interval
             slideInterval: 2500,    // Integer - time interval for autoSlide in ms
-            //pauseOnHover: true,     //pause autosliding on mouse hover over slider
+            pauseOnHover: true,     //pause autosliding on mouse hover over slider
             defaultDirection: 'next'    // String (prev, next) - default direction of sliding for autoSlide @FIXME - value and type may change
         };
 
@@ -145,16 +146,17 @@
 
         // current number of items per view - necessary for proper responsivnes
         _.currentItemsPerView = _.settings.itemsPerView;
+        _.currentItemsToSlide = _.settings.itemsToSlide;
 
         // generate start index for randomFirstItem === true
         if ( _.settings.randomFirstItem ) {
             ci = Math.floor( Math.random() * _.items.length );
-            _.currentIndex = ci - (ci % _.settings.itemsToSlide );
+            _.currentIndex = ci - (ci % _.currentItemsToSlide );
         }
 
         // Setup width and position of elements
         _.items.forEach( function( item, index ) {
-            var interval = ( 100 / _.settings.itemsPerView );
+            var interval = ( 100 / _.currentItemsPerView );
 
             item.style.width = interval + '%';
             item.style.left = ( index * interval ) + '%';
@@ -163,7 +165,7 @@
 
         // @FIXME - odvodit jako itesm / offset
         if ( _.settings.bullets ) {
-            $bullets[ Math.ceil( _.currentIndex / _.settings.itemsToSlide) ].classList.add('_pt_slider--active');
+            $bullets[ Math.ceil( _.currentIndex / _.currentItemsToSlide) ].classList.add('_pt_slider--active');
         }
     };
 
@@ -187,6 +189,16 @@
                 });
             });
         }
+
+        if ( _.settings.autoSlide ) {
+            _.slider.addEventListener( 'mouseenter', function() {
+                    clearInterval(_.slideTimer);
+                });
+
+            _.slider.addEventListener( 'mouseleave', function() {
+                    autoSliding.call(_);
+                });
+        }
     };
 
     /**
@@ -202,7 +214,7 @@
             directMove = true;
         }
 
-        moveItems.call(_, direction, _.settings.itemsToSlide, directMove );
+        moveItems.call(_, direction, _.currentItemsToSlide, directMove );
     };
 
     // @TODO
@@ -276,6 +288,7 @@
         $bullets = document.createElement( _.settings.bulletsEl );
         $bullets.classList.add( '_pt_slider__bullets' );
 
+        //@FIXME - upravit itemsToSlide na currentItemsToSlide
         for ( var i = 0; i < ( Math.ceil( _.items.length / _.settings.itemsToSlide ) ); i++ ) {
             $li = document.createElement( 'li' );
             $bullet = document.createElement( 'button' );
@@ -326,10 +339,10 @@
 
         //swap active class on bullets
         if ( _.settings.bullets ) {
-            if ( _.currentIndex + _.settings.itemsToSlide === _.items.length ) {
-                bulletIndex = Math.ceil( _.currentIndex / _.settings.itemsToSlide );
+            if ( _.currentIndex + _.currentItemsToSlide === _.items.length ) {
+                bulletIndex = Math.ceil( _.currentIndex / _.currentItemsToSlide );
             } else {
-                bulletIndex = Math.floor( _.currentIndex / _.settings.itemsToSlide );
+                bulletIndex = Math.floor( _.currentIndex / _.currentItemsToSlide );
             }
             _.container.querySelector( '._pt_slider--active' ).classList.remove( '_pt_slider--active' );
             _.container.querySelectorAll( '._pt_slider__bullet' )[ bulletIndex ].classList.add( '_pt_slider--active' );
@@ -376,15 +389,15 @@
         var _ = this,
             newIndex = workIndex;
 
-        if ( ( ( newIndex + _.settings.itemsToSlide ) === 0 ) || ( newIndex === _.items.length ) ) {
+        if ( ( ( newIndex + _.currentItemsToSlide ) === 0 ) || ( newIndex === _.items.length ) ) {
             if ( dir < 0 ) {
-                newIndex = _.items.length - _.settings.itemsToSlide;
+                newIndex = _.items.length - _.currentItemsToSlide;
             } else {
                 newIndex = 0;
             }
         } else {
-            if ( ( newIndex + _.settings.itemsToSlide ) > _.items.length ) {
-                newIndex = _.items.length - _.settings.itemsToSlide;
+            if ( ( newIndex + _.currentItemsToSlide ) > _.items.length ) {
+                newIndex = _.items.length - _.currentItemsToSlide;
             }
             if ( newIndex < 0 && ( (-1 * newIndex ) < _.settings.itemsToSlide ) ) {
                 newIndex = 0;
@@ -399,7 +412,7 @@
         clearInterval(_.slideTimer);
 
         _.slideTimer = window.setInterval( function() {
-            moveItems.call(_, _.settings.defaultDirection, _.settings.itemsToSlide, false );
+            moveItems.call(_, _.settings.defaultDirection, _.currentItemsToSlide, false );
         }, _.settings.slideInterval );
     }
 
