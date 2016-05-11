@@ -23,14 +23,6 @@ FIXME - example of markup
 
 ## TO-DO
 
-- responsivity
-- accessibility
-- touch-friendly
-
-- proper initialization - with init data attr, correct return function, based on class
-- proper init wrapper and funtion (test if fce can be safely run - on.DomContentLoaded, nastavit init data attr)
-- nevracet contructor, ale funkci, aby nemusel použít `new`
-
 - destroy function
 
 - trigerrovat eventy
@@ -41,13 +33,24 @@ FIXME - example of markup
 
 - RENAME THE PLUGIN
 
+- proper initialization - with init data attr, correct return function, based on class
+- proper init wrapper and funtion (test if fce can be safely run - on.DomContentLoaded, nastavit init data attr)
+- nevracet contructor, ale funkci, aby nemusel použít `new`
 - wrapper function - test feature compatibility (transition)
     - classList...
     - pokud neprojde feature testem - vypsat do console text s infem - možná pouze seřadit itemy a použít overflow-y pro posuvník (neřešit JS funkcionalitu)
-- maybe IE9 an IE8 support
+
+### Faze 2
 
 - infinit scrolling
 
+- accessibility
+    - aria attributy
+    - ovládání klávesnicí (jak to bude fungovat když item bude odkaz nebo bude odkazy obsahovat)?
+
+- touch-friendly
+
+- maybe IE9 an IE8 support
 
 ## BUGS:
 - multiple objects on one page

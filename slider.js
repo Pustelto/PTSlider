@@ -49,7 +49,7 @@
             randomFirstItem: false, // Start slider from 1st item or at random item
             itemsPerView: 1,        // Number of slider items per view
             itemsToSlide: 1,
-            //itemMinWidth: 0,        // Minimal width of item for responsive support
+            itemMinWidth: 300,        // Minimal width of item for responsive support
             controls: true,         // Display slider controls
             bullets: false,         // Display bullet list to switch specific slider item
             bulletsEl: 'ol',        // Type of element for bullet list - 'ul' | 'ol'
@@ -71,7 +71,12 @@
 
     // PUBLIC METHODS
     _PT_Slider.prototype.init = function(){
-        var _ = this;
+        var _ = this,
+            b;
+
+        // current number of items per view - necessary for proper responsivnes
+        _.currentItemsPerView = _.settings.itemsPerView;
+        _.currentItemsToSlide = _.settings.itemsToSlide;
 
         // Create slider container
         _.createSliderContainer();
@@ -94,6 +99,11 @@
         }
 
         _.slider.setAttribute( 'data-pt-slider-initialized', true);
+
+        b = detectBreakpoint.call(_);
+        if ( b ) {
+            respondToBreakpoint.call(_, b);
+        }
     };
 
     _PT_Slider.prototype.createSliderContainer = function() {
@@ -144,12 +154,8 @@
             ci,
             $bullets = _.container.querySelectorAll('._pt_slider__bullet');
 
-        // current number of items per view - necessary for proper responsivnes
-        _.currentItemsPerView = _.settings.itemsPerView;
-        _.currentItemsToSlide = _.settings.itemsToSlide;
-
         // generate start index for randomFirstItem === true
-        if ( _.settings.randomFirstItem ) {
+        if ( _.settings.randomFirstItem && !_.slider.getAttribute( 'data-pt-slider-initialized' ) ) {
             ci = Math.floor( Math.random() * _.items.length );
             _.currentIndex = ci - (ci % _.currentItemsToSlide );
         }
@@ -171,9 +177,9 @@
 
     _PT_Slider.prototype.bindEvents = function() {
         var _ = this,
-            controls = listToArray( _.container.querySelectorAll( '._pt_slider__control' ) ),
-            bullets = listToArray( _.container.querySelectorAll( '._pt_slider__bullet' ) );
+            controls = listToArray( _.container.querySelectorAll( '._pt_slider__control' ) );
 
+        //@FIXME bindControlsEvents.call(_);
         if ( _.settings.controls ) {
             controls.forEach( function( item ) {
                 item.addEventListener( 'click', function( e ) {
@@ -183,11 +189,7 @@
         }
 
         if ( _.settings.bullets ) {
-            bullets.forEach( function( item ) {
-                item.addEventListener( 'click', function( e ) {
-                    _.slideIt.call(_, e );
-                });
-            });
+            bindBulletsEvents.call(_);
         }
 
         if ( _.settings.autoSlide ) {
@@ -199,6 +201,14 @@
                     autoSliding.call(_);
                 });
         }
+
+        window.addEventListener( 'resize', function() {
+            var b = detectBreakpoint.call(_);
+
+            if ( b ) {
+                respondToBreakpoint.call(_, b);
+            }
+        });
     };
 
     /**
@@ -285,11 +295,17 @@
             $li,
             $bullet;
 
+        // reset of bullets at breakpoint
+        if ( !!_.slider.getAttribute( 'data-pt-slider-initialized' ) ) {
+            $bullets = _.container.querySelector( '._pt_slider__bullets' );
+            _.container.removeChild( $bullets );
+        }
+
         $bullets = document.createElement( _.settings.bulletsEl );
         $bullets.classList.add( '_pt_slider__bullets' );
 
-        //@FIXME - upravit itemsToSlide na currentItemsToSlide
-        for ( var i = 0; i < ( Math.ceil( _.items.length / _.settings.itemsToSlide ) ); i++ ) {
+        // Create single bullet
+        for ( var i = 0; i < ( Math.ceil( _.items.length / _.currentItemsToSlide ) ); i++ ) {
             $li = document.createElement( 'li' );
             $bullet = document.createElement( 'button' );
             $li.appendChild( $bullet );
@@ -305,6 +321,21 @@
         }
 
         _.container.appendChild( $bullets );
+    };
+
+    /*
+     * Handle binding of click event for bullets
+     * @private
+     */
+    var bindBulletsEvents = function() {
+        var _ = this,
+            bullets = listToArray( _.container.querySelectorAll( '._pt_slider__bullet' ) );
+
+        bullets.forEach( function( item ) {
+            item.addEventListener( 'click', function( e ) {
+                _.slideIt.call(_, e );
+            });
+        });
     };
 
     /*
@@ -414,7 +445,37 @@
         _.slideTimer = window.setInterval( function() {
             moveItems.call(_, _.settings.defaultDirection, _.currentItemsToSlide, false );
         }, _.settings.slideInterval );
-    }
+    };
+
+    var detectBreakpoint = function() {
+        var _ = this,
+            b = null;
+
+        if ( _.items[0].offsetWidth < _.settings.itemMinWidth ) {
+            b = -1;
+        }
+
+        if ( ( _.slider.offsetWidth >= ( _.settings.itemMinWidth * ( _.currentItemsPerView + 1 ) ) ) &&
+             ( _.currentItemsPerView + 1 <= _.settings.itemsPerView ) ) {
+            b = 1;
+        }
+
+        return b;
+    };
+
+    var respondToBreakpoint = function( resize ) {
+        var _ = this;
+
+        _.currentItemsPerView = _.currentItemsPerView + resize;
+        _.currentItemsToSlide = _.currentItemsToSlide + resize;
+
+        if ( _.settings.bullets ) {
+            makeBullets.call(_);
+            bindBulletsEvents.call(_);
+        }
+
+        _.setupSlider.call(_);
+    };
 
     // @FIXME - return _PT_Slider;
     return ms;
