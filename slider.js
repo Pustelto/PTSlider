@@ -451,7 +451,7 @@
         var _ = this,
             b = null;
 
-        if ( _.items[0].offsetWidth < _.settings.itemMinWidth ) {
+        if ( ( _.items[0].offsetWidth < _.settings.itemMinWidth) && ( _.currentItemsPerView > 1 ) ) {
             b = -1;
         }
 
@@ -466,8 +466,13 @@
     var respondToBreakpoint = function( resize ) {
         var _ = this;
 
-        _.currentItemsPerView = _.currentItemsPerView + resize;
-        _.currentItemsToSlide = _.currentItemsToSlide + resize;
+        if ( _.currentItemsPerView + resize >= 1 ) {
+            _.currentItemsPerView = _.currentItemsPerView + resize;
+        }
+
+        if ( _.currentItemsToSlide + resize >= 1 ) {
+            _.currentItemsToSlide = _.currentItemsToSlide + resize;
+        }
 
         if ( _.settings.bullets ) {
             makeBullets.call(_);
