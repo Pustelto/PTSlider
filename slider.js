@@ -464,14 +464,16 @@
     };
 
     var respondToBreakpoint = function( resize ) {
-        var _ = this;
+        var _ = this,
+            npv = _.currentItemsPerView + resize,
+            nts = _.currentItemsToSlide + resize;
 
-        if ( _.currentItemsPerView + resize >= 1 ) {
-            _.currentItemsPerView = _.currentItemsPerView + resize;
+        if ( npv >= 1 ) {
+            _.currentItemsPerView = npv
         }
 
-        if ( _.currentItemsToSlide + resize >= 1 ) {
-            _.currentItemsToSlide = _.currentItemsToSlide + resize;
+        if ( nts >= 1 && nts <= _.settings.itemsToSlide ) {
+            _.currentItemsToSlide = nts;
         }
 
         if ( _.settings.bullets ) {
