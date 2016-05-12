@@ -1,27 +1,24 @@
-._pt_slider {
+.ptslider__wrapper {
   position: relative;
   overflow: hidden;
 }
 
-._pt_slider__container {
-}
-
-._pt_slider__item {
+.ptslider__item {
   display: block;
   position: absolute;
   top: 0;
   will-chagne: transform;
 }
 
-._pt_slider__bullets {
+.ptslider__bullets {
   margin: 0;
   padding: 0;
 }
 
-._pt_slider__bullet {
+.ptslider__bullet {
   display: inline-block;
 }
 
-._pt_slider--active {
+.ptslider--active {
   border: 1px solid red;
 }

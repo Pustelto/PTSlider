@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Slider test page</title>
-    <link rel="stylesheet" type="text/css" href="_pt_slider.css">
+    <link rel="stylesheet" type="text/css" href="ptslider.css">
     <style>
         body {
             padding: 0 20px;
@@ -34,9 +34,9 @@
 </head>
 <body>
     <div class="slider">
-        <div class="slider__item" data-pt-slider-label="První item"><span>item 1</span></div>
+        <div class="slider__item" data-ptslider-label="První item"><span>item 1</span></div>
         <div class="slider__item"><span>item 2</span></div>
-        <div class="slider__item" data-pt-slider-label="Třetí prvek"><span>item 3</span></div>
+        <div class="slider__item" data-ptslider-label="Třetí prvek"><span>item 3</span></div>
         <div class="slider__item"><span>item 4</span></div>
         <div class="slider__item"><span>item 5</span></div>
         <div class="slider__item"><span>item 6</span></div>
@@ -54,9 +54,9 @@
 -->
 
     <div class="slider-2">
-        <div class="slider__item" data-pt-slider-label="První item"><span>item 1</span></div>
+        <div class="slider__item" data-ptslider-label="První item"><span>item 1</span></div>
         <div class="slider__item"><span>item 2</span></div>
-        <div class="slider__item" data-pt-slider-label="Třetí prvek"><span>item 3</span></div>
+        <div class="slider__item" data-ptslider-label="Třetí prvek"><span>item 3</span></div>
         <div class="slider__item"><span>item 4</span></div>
         <div class="slider__item"><span>item 5</span></div>
     </div>
@@ -71,7 +71,7 @@
             itemsToSlide: 2,
             randomFirstItem: true
         };
-        _PT_Slider( '.slider', opt );
+        ptslider( '.slider', opt );
 
         var opt2 = {
             autoSlide: true,
@@ -80,7 +80,7 @@
             itemsPerView: 2,
             itemsToSlide: 1
         };
-        _PT_Slider( '.slider-2', opt2 );
+        ptslider( '.slider-2', opt2 );
     </script>
 </body>
 </html>
