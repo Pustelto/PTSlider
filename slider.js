@@ -54,7 +54,7 @@
         var _ = this;
 
         // Slider basic properties - slider components
-        _.slider = document.querySelector( elem );
+        _.slider = elem;
         _.container = null;
         _.items = [];
 
@@ -122,14 +122,14 @@
 
         // Automatic sliding
         if ( _.settings.autoSlide ) {
-            _.autoSliding.call(_);
+            _.autoSliding();
         }
 
         _.slider.setAttribute( 'data-ptslider-initialized', true);
 
-        b = _.detectBreakpoint.call(_);
+        b = _.detectBreakpoint();
         if ( b ) {
-            _.respondToBreakpoint.call(_, b);
+            _.respondToBreakpoint( b );
         }
     };
 
@@ -166,16 +166,15 @@
         var _ = this;
 
         if ( _.settings.controls ) {
-            _.makeButton.call( _, 'prev' );
-            _.makeButton.call( _, 'next' );
+            _.makeButton( 'prev' );
+            _.makeButton( 'next' );
         }
 
         if ( _.settings.bullets ) {
-            _.makeBullets.call( _ );
+            _.makeBullets();
         }
     };
 
-    //@FIXME - rozkouskovat na menší funkce - aby se dali části použít i při reinitu v responsivu
     Ptslider.prototype.setupSlider = function() {
         var _ = this,
             ci,
@@ -196,7 +195,6 @@
             item.style.transform = ( 'translate3d( -' + _.currentIndex * 100 + '%, 0, 0 )' );
         });
 
-        // @FIXME - odvodit jako itesm / offset
         if ( _.settings.bullets ) {
             $bullets[ Math.ceil( _.currentIndex / _.currentItemsToSlide) ].classList.add('ptslider--active');
         }
@@ -210,13 +208,13 @@
         if ( _.settings.controls ) {
             controls.forEach( function( item ) {
                 item.addEventListener( 'click', function( e ) {
-                    _.slideIt.call(_, e );
-                });
+                    _.slideIt.call( _, e );
+                } );
             });
         }
 
         if ( _.settings.bullets ) {
-            _.bindBulletsEvents.call(_);
+            _.bindBulletsEvents();
         }
 
         if ( _.settings.autoSlide ) {
@@ -258,13 +256,22 @@
     // create destructor fce
     Ptslider.prototype.destroy = function() {
         console.log( 'destroy function - WIP' );
+        // must refactor entire code - destroy function is not callable, it is not possible to unbind events
         // throw away all variables
         // deleted unnecessary elements
+
+        // remove eventlisteners
+        /*
+        _.slider
+        _.slider
+        bullets
+        controls
+        window
+        */
     };
 
     /*
      * Function to create controls for slider
-     * @private
      * @param direction {String}
      */
     Ptslider.prototype.makeButton = function( direction ) {
@@ -283,9 +290,7 @@
 
     /*
      * Function to create bullet list for slider
-     * @private
      */
-     // @TODO - počet odrážek odvodit od items / offset
     Ptslider.prototype.makeBullets = function() {
         var _ = this,
             $label,
@@ -323,14 +328,13 @@
 
     /*
      * Handle binding of click event for bullets
-     * @private
      */
     Ptslider.prototype.bindBulletsEvents = function() {
         var _ = this,
             bullets = listToArray( _.container.querySelectorAll( '.ptslider__bullet' ) );
 
         bullets.forEach( function( item ) {
-            item.addEventListener( 'click', function( e ) {
+            item.addEventListener( 'click', function bulletEvent( e ) {
                 _.slideIt.call(_, e );
             });
         });
@@ -338,7 +342,6 @@
 
     /*
      * Function to move slider items by specific offset
-     * @private
      * @param direction {String} - direction in which items will move
      * @param offset {Integer} - how many sliders should move
      * @param directMove {Boolean} - directs whether movement is only by one step or to specific slider item
@@ -350,44 +353,45 @@
             bulletIndex,
             position;
 
-        _.isSliding = true;
+        if ( !_.isSliding ) {
+            _.isSliding = true;
 
-        if ( directMove ) {
-            workIndex = dir * offset;
-            _.currentIndex = _.setNewIndex.call( _, workIndex, dir );
-        } else {
-            workIndex = _.currentIndex + ( dir * offset );
-            _.currentIndex = _.setNewIndex.call( _, workIndex, dir );
-        }
-
-        position = _.currentIndex * -100;
-
-        _.items.forEach(function( item ) {
-            item.style.transform = ( 'translate3d( ' + position + '%, 0, 0)' );
-        });
-
-        //swap active class on bullets
-        if ( _.settings.bullets ) {
-            if ( _.currentIndex + _.currentItemsToSlide === _.items.length ) {
-                bulletIndex = Math.ceil( _.currentIndex / _.currentItemsToSlide );
+            if ( directMove ) {
+                workIndex = dir * offset;
+                _.currentIndex = _.setNewIndex.call( _, workIndex, dir );
             } else {
-                bulletIndex = Math.floor( _.currentIndex / _.currentItemsToSlide );
+                workIndex = _.currentIndex + ( dir * offset );
+                _.currentIndex = _.setNewIndex.call( _, workIndex, dir );
             }
-            _.container.querySelector( '.ptslider--active' ).classList.remove( 'ptslider--active' );
-            _.container.querySelectorAll( '.ptslider__bullet' )[ bulletIndex ].classList.add( 'ptslider--active' );
-        }
 
-        //reset auto slide timer
-        if ( _.settings.autoSlide ) {
-            _.autoSliding.call(_);
-        }
+            position = _.currentIndex * -100;
 
-        _.isSliding = false;
+            _.items.forEach(function( item ) {
+                item.style.transform = ( 'translate3d( ' + position + '%, 0, 0)' );
+            });
+
+            //swap active class on bullets
+            if ( _.settings.bullets ) {
+                if ( _.currentIndex + _.currentItemsToSlide === _.items.length ) {
+                    bulletIndex = Math.ceil( _.currentIndex / _.currentItemsToSlide );
+                } else {
+                    bulletIndex = Math.floor( _.currentIndex / _.currentItemsToSlide );
+                }
+                _.container.querySelector( '.ptslider--active' ).classList.remove( 'ptslider--active' );
+                _.container.querySelectorAll( '.ptslider__bullet' )[ bulletIndex ].classList.add( 'ptslider--active' );
+            }
+
+            //reset auto slide timer
+            if ( _.settings.autoSlide ) {
+                _.autoSliding.call(_);
+            }
+
+            _.isSliding = false;
+        }
     };
 
     /*
      * Function converts String direction to Integer
-     * @private
      * @param direction {String} - direction to convert, can be prev, next or Number
      * @return Integer
      */
@@ -409,29 +413,30 @@
 
     /*
      * Check if the slider items are off limit and slider should be returned to basic position
-     * @private
-     * @param that {JS obj}
      * @param ci {Integer} - new current index
      * @return Integer
      */
     Ptslider.prototype.setNewIndex = function( workIndex, dir ) {
         var _ = this,
-            newIndex = workIndex;
+            newIndex = workIndex,
+            corr = Math.max( _.currentItemsToSlide, _.currentItemsPerView );
 
-        if ( ( ( newIndex + _.currentItemsToSlide ) === 0 ) || ( newIndex === _.items.length ) ) {
-            if ( dir < 0 ) {
-                newIndex = _.items.length - _.currentItemsToSlide;
-            } else {
-                newIndex = 0;
-            }
-        } else {
-            if ( ( newIndex + _.currentItemsToSlide ) > _.items.length ) {
-                newIndex = _.items.length - _.currentItemsToSlide;
-            }
-            if ( newIndex < 0 && ( (-1 * newIndex ) < _.settings.itemsToSlide ) ) {
-                newIndex = 0;
-            }
+        if ( _.currentIndex === 0 && dir < 0 ) {
+                newIndex = _.items.length - corr;
         }
+
+        if ( _.currentIndex === _.items.length - corr && dir > 0 ) {
+                newIndex = 0;
+        }
+
+        if ( ( newIndex + corr ) > _.items.length ) {
+            newIndex = _.items.length - corr;
+        }
+
+        if ( newIndex < 0 && ( (-1 * newIndex ) < corr ) ) {
+            newIndex = 0;
+        }
+
         return newIndex;
     };
 
@@ -482,8 +487,16 @@
         _.setupSlider.call(_);
     };
 
+    /**
+     * Wrapper for constructor function.
+     * Handles proper constructor call and initialization of multiple sliders
+     */
     function callee( elem, opt) {
-        return new Ptslider( elem, opt );
+        var e = listToArray( document.querySelectorAll( elem ) );
+
+        e.forEach( function( slider ) {
+            return new Ptslider( slider, opt );
+        } );
     }
     return callee;
 });

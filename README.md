@@ -1,14 +1,12 @@
 # JS Slider Plugin (WIP)
 
-__current version: 0.6.0__
+__current version: 0.8.0__
 
 This is my own custom JS slider plugin - it's base on slider plugin I wrote for my web for scout course [Ficak](http://www.ficak.skauting.cz). But that version is a bit crude and I've got much better understanding of JS since that time. So I've desided do rewrite that plugin and to make it a Vanilla JS plugin in order to polish my JS skills and learn a new things in process.
 
 Feel free to use it in your projects if you wish or leave a comments with suggestions and feedback.
 
 My aim was to create lightweight vanilla JS plugin which can be used in most cases and can be styled easily. You can use almout any markup as a base for the slider (use `<div>`, `<ul>` or something else). Only condition is to have container with only items inside of it. Rest will be handled by the plugin itself.
-
-FIXME - example of markup, setup, how to use it
 
 
 ## Features
@@ -22,29 +20,36 @@ FIXME - example of markup, setup, how to use it
 
 
 ## TO-DO
+- Fix event listeners to be able to remove them - need to refactor entire wrapper function (remove prototype inheritance, do proper module patern)
+- Destroy function
 
-- multiple objects on one page
-
-- wrapper function - test feature compatibility (transition)
+- Wrapper function - test feature compatibility (transition)
     - classList...
-    - pokud neprojde feature testem - vypsat do console text s infem - možná pouze seřadit itemy a použít overflow-y pro posuvník (neřešit JS funkcionalitu)
+    - if feature test fail - console.log info text about fail, maybe order items and use overflow-y to make content accessible
 
-- destroy function
+- Documentation, README.md
 
 
 ### Things to add in the future
 
 - Infinit scrolling
 - Improve accessibility support
-    - aria attributy
+    - aria attributes
     - keyboard controls (what to do with links in slider?)?
 - Make it more touch-friendly
 - Add optional basic CSS template
 - Possibility to add custom CSS classes to slider to separate functionality and presentation
 - Maybe trigger custome events
+- Clean and refactor code base (for optimalization and performance)
 
 
 ## Known issues
 
-- when resizing window white space may be visible (empty items) - have to reset position after resize as well
-- bug during sliding - empty space after last slide
+1. when resizing window white space may be visible (empty items) - have to reset position after resize as well
+3. responsive - during init is number of slides decreased only by one, not to number corresponding with screen size
+
+
+zjistit jestli nepřetékám (nevzniká volné místo) při resizu - korekce indexu - ???
+
+zjistit podle šířky slideru a počtu zobrazovaných itemů správny počet itemů pro zobrazení - udělat fce místo detectbreakpoint - fce se bude volat i na začátku v setupu - nemusím takp o initu vše znovu přepočítávat. (fix pro 3)
+
