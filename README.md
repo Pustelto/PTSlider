@@ -11,16 +11,17 @@ My aim was to create lightweight vanilla JS plugin which can be used in most cas
 
 ## Features
 
-- Lightweight with no dependency
+- Lightweight
+- No dependency
 - Compatibility with IE10+
 - Responsive
 - User can setup number of slides per view and to scroll separately
-- Minimal styles - as the moment only core styles necessary for proper working of the plugin (without any visual styling) are avaiable. So you have full control over slider visualls
+- Minimal styles - at the moment only core styles necessary for proper working of the plugin (without any visual styling) are avaiable. So you have full control over slider visual.
 - Easy configuration
 
 
 ## TO-DO
-- Fix event listeners to be able to remove them - need to refactor entire wrapper function (remove prototype inheritance, do proper module patern)
+- Fix event listeners to be able to remove them - need to refactor wrapper function (remove prototype inheritance, do proper module pattern)
 - Destroy function
 
 - Wrapper function - test feature compatibility (transition)
