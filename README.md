@@ -30,7 +30,7 @@ My aim was to create lightweight vanilla JS plugin which can be used in most cas
 - Documentation, README.md
 
 
-### Things to add in the future
+## Things to add in the future
 
 - Infinit scrolling
 - Improve accessibility support
