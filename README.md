@@ -1,6 +1,6 @@
 # JS Slider Plugin (WIP)
 
-__current version: 0.8.0__
+__current version: 0.6.0__
 
 This is my own custom JS slider plugin - it's base on slider plugin I wrote for my web for scout course [Ficak](http://www.ficak.skauting.cz). But that version is a bit crude and I've got much better understanding of JS since that time. So I've desided do rewrite that plugin and to make it a Vanilla JS plugin in order to polish my JS skills and learn a new things in process.
 
